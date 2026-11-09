@@ -10,8 +10,10 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
 db.init_app(app)
-# Настройка системы входа
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
