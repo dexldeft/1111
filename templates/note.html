@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/subject/{{ note.subject.id }}">{{ note.subject.name }}</a> / {{ note.title }}
+    </div>
+
+    <div class="note-detail">
+        <h1>{{ note.title }}
+            {% if note.status == 'pending' %}<span class="badge badge-pending">На проверке</span>{% endif %}
+            {% if note.status == 'rejected' %}<span class="badge badge-pending" style="color:var(--danger); background:rgba(239,68,68,0.1)">Отклонен</span>{% endif %}
+        </h1>
+
+        <div class="meta">
+            <span>Предмет: <b style="color:var(--text)">{{ note.subject.name }}</b></span>
+            <span>Автор: <b style="color:var(--text)">{{ note.author.username }}
+                {% if note.author.role == 'admin' %}
+                    <img src="{{ url_for('static', filename='img/admin-badge.png') }}" class="admin-badge">
+                {% endif %}
+            </b></span>
+            <span>{{ note.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+
+        {% if note.reject_reason %}
+            <div class="error"><b>Причина отклонения:</b> {{ note.reject_reason }}</div>
+        {% endif %}
+
+        {% if note.description %}
+            <div class="description">{{ note.description }}</div>
+        {% endif %}
+
+        <div class="file-block">
+            <div class="file-block-info">
+                <div class="file-icon">📄</div>
+                <div>
+                    <div style="font-weight:600">{{ note.file_original_name }}</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <a href="{{ url_for('uploaded_file', filename=note.file_path) }}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration:none;">Открыть</a>
+                <a href="{{ url_for('uploaded_file', filename=note.file_path) }}" download class="btn btn-sm" style="text-decoration:none;">Скачать</a>
+            </div>
+        </div>
+
+        {% if current_user.is_authenticated and current_user.id == note.author_id %}
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1.5rem; display: flex; gap: 1rem;">
+                <a href="/note/{{ note.id }}/edit" class="btn btn-ghost btn-sm" style="text-decoration: none;">Редактировать</a>
+
+                <form action="/delete_note/{{ note.id }}" method="POST" onsubmit="return confirm('Точно удалить конспект?');">
+                    <button type="submit" class="btn-danger btn-sm">Удалить пост</button>
+                </form>
+            </div>
+        {% endif %}    </div>
+{% endblock %}

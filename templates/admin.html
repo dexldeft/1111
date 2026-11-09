@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Админ-панель</h1>
+    </div>
+
+    <div class="tabs" style="display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+        <a href="/admin" style="color: var(--purple-light); text-decoration: none; font-weight: bold; {% if request.path == '/admin' %}border-bottom: 2px solid var(--purple); padding-bottom: 0.5rem;{% endif %}">Очередь модерации</a>
+        <a href="/admin/notes" style="color: var(--purple-light); text-decoration: none; font-weight: bold; {% if request.path == '/admin/notes' %}border-bottom: 2px solid var(--purple); padding-bottom: 0.5rem;{% endif %}">Все посты</a>
+        <a href="/admin/users" style="color: var(--purple-light); text-decoration: none; font-weight: bold; {% if request.path == '/admin/users' %}border-bottom: 2px solid var(--purple); padding-bottom: 0.5rem;{% endif %}">Пользователи</a>
+    </div>
+
+    {% if request.path == '/admin' %}
+        {% if notes %}
+            {% for note in notes %}
+                <div class="admin-note">
+                    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                        <div>
+                            <h3>{{ note.title }}</h3>
+                            <div class="note-card-meta" style="margin-top:0.5rem;">
+                                <span>Предмет: {{ note.subject.name }}</span>
+                                <span>Автор: {{ note.author.username }}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="/note/{{ note.id }}" class="btn-ghost btn-sm" style="text-decoration:none; padding:0.4rem 0.9rem; border-radius:8px; border:1px solid var(--border);">Открыть пост</a>
+                        </div>
+                    </div>
+                    <div class="admin-note-actions">
+                        <form action="/admin/approve/{{ note.id }}" method="POST">
+                            <button type="submit" class="btn-success btn-sm">Одобрить</button>
+                        </form>
+                        <form action="/admin/reject/{{ note.id }}" method="POST" style="display:flex; gap:0.5rem; flex:1;">
+                            <input type="text" name="reason" placeholder="Причина отклонения..." required style="flex:1; padding:0.4rem; border-radius:8px; border:1px solid var(--border); background:var(--bg); color:white;">
+                            <button type="submit" class="btn-danger btn-sm">Отклонить</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty"><h2>✅ Очередь пуста</h2><p>Все конспекты проверены!</p></div>
+        {% endif %}
+    {% endif %}
+
+    {% if request.path == '/admin/notes' %}
+        <table style="width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden;">
+            <thead style="background: var(--bg); color: var(--muted); text-align: left;">
+                <tr><th style="padding: 1rem;">Тема</th><th>Автор</th><th>Статус</th><th>Действие</th></tr>
+            </thead>
+            <tbody>
+                {% for note in all_notes %}
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;"><a href="/note/{{ note.id }}" style="color: var(--purple-light);">{{ note.title }}</a></td>
+                        <td>{{ note.author.username }}</td>
+                        <td>
+                            {% if note.status == 'approved' %}<span style="color: #4ade80;">Опубликован</span>{% endif %}
+                            {% if note.status == 'pending' %}<span style="color: #fbbf24;">На проверке</span>{% endif %}
+                            {% if note.status == 'rejected' %}<span style="color: #f87171;">Отклонен</span>{% endif %}
+                        </td>
+                        <td>
+                            <form action="/admin/delete_note/{{ note.id }}" method="POST" onsubmit="return confirm('Удалить пост навсегда?');">
+                                <button type="submit" class="btn-danger btn-sm">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if request.path == '/admin/users' %}
+        <table style="width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden;">
+            <thead style="background: var(--bg); color: var(--muted); text-align: left;">
+                <tr><th style="padding: 1rem;">Пользователь</th><th>Роль</th><th>Постов</th><th>Статус</th><th>Действия</th></tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 1rem;">{{ user.username }}</td>
+                        <td>{% if user.role == 'admin' %}Админ{% else %}Юзер{% endif %}</td>
+                        <td>{{ user.notes|length }}</td>
+                        <td>{% if user.is_blocked %}<span style="color: #f87171;">Заблокирован</span>{% else %}<span style="color: #4ade80;">Активен</span>{% endif %}</td>
+                        <td style="display: flex; gap: 0.5rem; padding: 1rem;">
+                            {% if user.id != current_user.id %}
+                                <form action="/admin/toggle_block/{{ user.id }}" method="POST">
+                                    <button type="submit" class="btn-ghost btn-sm">
+                                        {% if user.is_blocked %}Разблокировать{% else %}Заблокировать{% endif %}
+                                    </button>
+                                </form>
+                                <form action="/admin/delete_user/{{ user.id }}" method="POST" onsubmit="return confirm('Удалить пользователя и ВСЕ его посты?');">
+                                    <button type="submit" class="btn-danger btn-sm">Удалить</button>
+                                </form>
+                            {% else %}
+                                <span class="muted">Это вы</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Дисциплины</h1>
+        {% if current_user.is_authenticated %}
+            <button onclick="window.location.href='/create'">+ Создать пост</button>
+        {% endif %}
+    </div>
+
+    <div class="subjects-grid">
+        {% for subject in subjects %}
+            <div class="subject-card" onclick="window.location.href='/subject/{{ subject.id }}'">
+                <div class="subject-icon">📚</div>
+                <h3>{{ subject.name }}</h3>
+                <div class="count">Конспекты</div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

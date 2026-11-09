@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / {{ subject.name }}
+    </div>
+
+    <div class="page-header">
+        <h1>{{ subject.name }}</h1>
+        {% if current_user.is_authenticated %}
+            <button onclick="window.location.href='/create?subject_id={{ subject.id }}'">+ Создать пост</button>
+        {% endif %}
+    </div>
+
+    <div class="notes-list">
+        {% if notes %}
+            {% for note in notes %}
+                <div class="note-card" onclick="window.location.href='/note/{{ note.id }}'">
+                    <div>
+                        <h3>{{ note.title }}
+                            {% if note.status == 'pending' %}<span class="badge badge-pending">На проверке</span>{% endif %}
+                        </h3>
+                        <div class="note-card-meta">
+                            <span>👤 {{ note.author.username }}</span>
+                            <span>📄 {{ note.file_original_name }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <h2>📭 Пока нет конспектов по этому предмету</h2>
+                <p>Стань первым, кто его выложит!</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

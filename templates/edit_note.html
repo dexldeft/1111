@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / <a href="/note/{{ note.id }}">{{ note.title }}</a> / Редактирование
+    </div>
+
+    <div class="auth-box" style="max-width: 600px; margin: 0 auto;">
+        <h1>Редактировать конспект</h1>
+        <p class="subtitle">После сохранения конспект снова уйдёт на проверку админу</p>
+
+        <form method="POST" action="/note/{{ note.id }}/edit">
+            <div class="field">
+                <label>Предмет *</label>
+                <select name="subject_id" required>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}" {% if subject.id == note.subject_id %}selected{% endif %}>
+                            {{ subject.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Тема конспекта *</label>
+                <input type="text" name="title" value="{{ note.title }}" required>
+            </div>
+
+            <div class="field">
+                <label>Описание</label>
+                <textarea name="description">{{ note.description or '' }}</textarea>
+            </div>
+
+            <div class="field">
+                <label>Файл</label>
+                <div class="file-block" style="margin-bottom: 0;">
+                    <div class="file-block-info">
+                        <div class="file-icon">📄</div>
+                        <div>
+                            <div style="font-weight: 600;">{{ note.file_original_name }}</div>
+                            <div class="muted" style="font-size: 0.8rem;">Файл изменить нельзя</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" style="flex: 1;">Сохранить</button>
+                <a href="/note/{{ note.id }}" class="btn btn-ghost" style="flex: 1; text-align: center; text-decoration: none;">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

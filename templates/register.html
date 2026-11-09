@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-box">
+    <h1>Регистрация</h1>
+    <p class="subtitle">Создайте аккаунт, чтобы выкладывать конспекты</p>
+
+    <form method="POST" action="/register">
+        <div class="field">
+            <label>Имя пользователя</label>
+            <input type="text" name="username" required>
+            <div class="field-hint">Минимум 3 символа</div>
+        </div>
+        <div class="field">
+            <label>Пароль</label>
+            <input type="password" name="password" required>
+            <div class="field-hint">Минимум 4 символа</div>
+        </div>
+        <div class="field">
+            <label>Повтор пароля</label>
+            <input type="password" name="password_confirm" required>
+        </div>
+        <button type="submit" style="width:100%">Создать аккаунт</button>
+    </form>
+
+    <div class="auth-switch">
+        Уже есть аккаунт? <a href="/login">Войти</a>
+    </div>
+</div>
+{% endblock %}

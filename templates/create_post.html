@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="breadcrumbs">
+        <a href="/">Главная</a> / Новый конспект
+    </div>
+
+    <div class="auth-box" style="max-width: 600px; margin: 0 auto;">
+        <h1>Новый конспект</h1>
+        <p class="subtitle">После загрузки конспект уйдёт на проверку админу</p>
+
+        <form method="POST" action="/create" enctype="multipart/form-data">
+            <div class="field">
+                <label>Предмет *</label>
+                <select name="subject_id" required>
+                    <option value="">— выберите предмет —</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Тема конспекта *</label>
+                <input type="text" name="title" placeholder="Например: Формулы интегрирования" required>
+            </div>
+
+            <div class="field">
+                <label>Описание</label>
+                <textarea name="description" placeholder="Коротко о содержании (необязательно)"></textarea>
+            </div>
+
+            <div class="field">
+                <label>Файл * (PDF, DOCX, PNG, JPG)</label>
+                <input type="file" name="file" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required style="padding: 0.5rem;">
+            </div>
+
+            <button type="submit" style="width: 100%;">Загрузить на проверку</button>
+        </form>
+    </div>
+{% endblock %}

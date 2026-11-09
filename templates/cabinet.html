@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>Личный кабинет</h1>
+        <button onclick="window.location.href='/create'">+ Создать пост</button>
+    </div>
+
+    <h2 style="margin-bottom: 1rem; color: var(--purple-light);">Мои конспекты</h2>
+    <div class="notes-list" style="margin-bottom: 3rem;">
+        {% if my_notes %}
+            {% for note in my_notes %}
+                <div class="note-card" onclick="window.location.href='/note/{{ note.id }}'">
+                    <div>
+                        <h3>{{ note.title }}
+                            {% if note.status == 'pending' %}<span class="badge badge-pending">На проверке</span>{% endif %}
+                            {% if note.status == 'approved' %}<span class="badge" style="background:rgba(34,197,94,0.15); color:#4ade80;">Опубликован</span>{% endif %}
+                            {% if note.status == 'rejected' %}<span class="badge" style="background:rgba(239,68,68,0.15); color:#f87171;">Отклонен</span>{% endif %}
+                        </h3>
+                        <div class="note-card-meta">
+                            <span>Предмет: {{ note.subject.name }}</span>
+                            <span>Дата: {{ note.created_at.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                        {% if note.status == 'rejected' and note.reject_reason %}
+                            <div style="color: #f87171; font-size: 0.85rem; margin-top: 0.5rem;">
+                                <b>Причина:</b> {{ note.reject_reason }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <p>Вы ещё не выложили ни одного конспекта.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <h2 style="margin-bottom: 1rem; color: var(--purple-light);">Просмотренные</h2>
+    <div class="notes-list">
+        {% if viewed_notes %}
+            {% for note in viewed_notes %}
+                <div class="note-card" onclick="window.location.href='/note/{{ note.id }}'">
+                    <div>
+                        <h3>{{ note.title }}</h3>
+                        <div class="note-card-meta">
+                            <span>Предмет: {{ note.subject.name }}</span>
+                            <span>Автор: {{ note.author.username }}</span>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <p>Вы ещё не просматривали чужие конспекты.</p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>КонспектДроп</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="window.location.href='/'">КонспектДроп</div>
+        <nav>
+            {% if current_user.is_authenticated %}
+                <button class="btn-ghost" onclick="window.location.href='/'">Каталог</button>
+                <button class="btn-ghost" onclick="window.location.href='/cabinet'">Мои конспекты</button>
+                {% if current_user.role == 'admin' %}
+                    <button onclick="window.location.href='/admin'">Админ-панель</button>
+                {% endif %}
+
+                <span class="muted" style="margin-left:0.5rem">
+                    {{ current_user.username }}
+                    {% if current_user.role == 'admin' %}
+                        <img src="{{ url_for('static', filename='img/admin-badge.png') }}" class="admin-badge" alt="Админ">
+                    {% endif %}
+                </span>
+                <button class="btn-ghost" onclick="window.location.href='/logout'">Выйти</button>
+            {% else %}
+                <button class="btn-ghost" onclick="window.location.href='/login'">Войти</button>
+                <button onclick="window.location.href='/register'">Регистрация</button>
+            {% endif %}
+        </nav>
+    </header>
+
+           <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>
