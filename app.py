@@ -345,6 +345,8 @@ def admin_delete_user(user_id):
         db.session.commit()
         flash(f'Пользователь {user.username} удален', 'success')
     return redirect(url_for('admin_users'))
+# Вызываем создание базы прямо при загрузке приложения
+init_db()
+
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
