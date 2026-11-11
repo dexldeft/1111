@@ -10,6 +10,11 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.config.from_object(Config)
+@app.before_request
+def enforce_https():
+    if not request.is_secure and not app.debug:
+        url = request.url.replace("http://", "https://", 1)
+        return redirect(url, code=301)
 
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
