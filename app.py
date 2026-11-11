@@ -92,15 +92,10 @@ def login():
             if user.is_blocked:
                 flash('Аккаунт заблокирован администратором', 'error')
             else:
-                if user and check_password_hash(user.password_hash, password):
-                    if user.is_blocked:
-                        flash('Аккаунт заблокирован администратором', 'error')
-                    else:
-                        # --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
-                        remember = True if request.form.get('remember') else False
-                        login_user(user, remember=remember)
-                        # -----------------------
-                        return redirect(url_for('index'))
+                # --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
+                remember = True if request.form.get('remember') else False
+                login_user(user, remember=remember)
+                # -----------------------
                 return redirect(url_for('index'))
         else:
             flash('Неверное имя или пароль', 'error')
