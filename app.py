@@ -10,13 +10,25 @@ from werkzeug.utils import secure_filename
 
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-app = Flask(__name__)
-# ... твои настройки app.config ...
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # <-- ДОБАВЬ ЭТУ СТРОКУ
+from supabase import create_client, Client
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Настройка доверия к прокси (для HTTPS)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+
+# Подключение к облаку Supabase Storage
+supabase: Client = create_client(app.config.get('SUPABASE_URL'), app.config.get('SUPABASE_KEY'))
+
+
 @app.before_request
+def enforce_https():
+    if not request.is_secure and not app.debug:
+        url = request.url.replace("http://", "https://", 1)
+        return redirect(url, code=301)
+
+
 def enforce_https():
     if not request.is_secure and not app.debug:
         url = request.url.replace("http://", "https://", 1)
@@ -153,16 +165,24 @@ def create_note():
             flash('Недопустимый формат файла. Разрешено: PDF, DOC, DOCX, PNG, JPG', 'error')
             return redirect(url_for('create_note'))
 
-        filename = secure_filename(file.filename)
-        unique_filename = f"{uuid.uuid4().hex}_{filename}"
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
-        file.save(file_path)
+        # Загружаем файл в облако Supabase Storage
+        file_content = file.read()
+        unique_filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
+
+        supabase.storage.from_('notes_files').upload(
+            path=unique_filename,
+            file=file_content,
+            file_options={"content-type": file.content_type}
+        )
+
+        # Получаем публичную ссылку на файл
+        file_url = supabase.storage.from_('notes_files').get_public_url(unique_filename)
 
         new_note = Note(
             title=title,
             description=description,
-            file_path=unique_filename,
-            file_original_name=filename,
+            file_path=file_url,  # <--- ИСПРАВЛЕНО: сохраняем ссылку
+            file_original_name=file.filename,  # <--- ИСПРАВЛЕНО: сохраняем оригинальное имя
             subject_id=subject_id,
             author_id=current_user.id,
             status='pending'
