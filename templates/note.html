@@ -13,9 +13,9 @@
 
         <div class="meta">
             <span>Предмет: <b style="color:var(--text)">{{ note.subject.name }}</b></span>
-            <span>Автор: <b style="color:var(--text)">{{ note.author.username }}
+                        <span>Автор: <b style="color:var(--text)">{{ note.author.username }}
                 {% if note.author.role == 'admin' %}
-                    <img src="{{ url_for('static', filename='img/admin-badge.png') }}" class="admin-badge">
+                    <img src="{{ url_for('static', filename='img/admin_badge.png') }}" class="admin-badge" alt="Админ">
                 {% endif %}
             </b></span>
             <span>{{ note.created_at.strftime('%d.%m.%Y %H:%M') }}</span>

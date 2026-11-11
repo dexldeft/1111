@@ -17,10 +17,10 @@
                     <button onclick="window.location.href='/admin'">Админ-панель</button>
                 {% endif %}
 
-                <span class="muted" style="margin-left:0.5rem">
+                                <span class="muted" style="margin-left:0.5rem; display: flex; align-items: center;">
                     {{ current_user.username }}
                     {% if current_user.role == 'admin' %}
-                        <img src="{{ url_for('static', filename='img/admin_badge.png') }}" class="admin_badge" alt="Админ">
+                        <img src="{{ url_for('static', filename='img/admin_badge.png') }}" class="admin-badge" alt="Админ">
                     {% endif %}
                 </span>
                 <button class="btn-ghost" onclick="window.location.href='/logout'">Выйти</button>
