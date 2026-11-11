@@ -8,6 +8,12 @@ from models import db, User, Subject, Note, NoteView  # <--- ВОТ ОНА
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+app = Flask(__name__)
+# ... твои настройки app.config ...
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # <-- ДОБАВЬ ЭТУ СТРОКУ
+
 app = Flask(__name__)
 app.config.from_object(Config)
 @app.before_request
@@ -74,7 +80,15 @@ def login():
             if user.is_blocked:
                 flash('Аккаунт заблокирован администратором', 'error')
             else:
-                login_user(user)
+                if user and check_password_hash(user.password_hash, password):
+                    if user.is_blocked:
+                        flash('Аккаунт заблокирован администратором', 'error')
+                    else:
+                        # --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
+                        remember = True if request.form.get('remember') else False
+                        login_user(user, remember=remember)
+                        # -----------------------
+                        return redirect(url_for('index'))
                 return redirect(url_for('index'))
         else:
             flash('Неверное имя или пароль', 'error')
