@@ -8,7 +8,10 @@
 </head>
 <body>
     <header>
-        <div class="logo" onclick="window.location.href='/'">КонспектДроп</div>
+       <div class="logo" onclick="window.location.href='/'" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Логотип" style="height: 40px; width: auto;">
+    КонспектДроп
+</div>
         <nav>
             {% if current_user.is_authenticated %}
                 <button class="btn-ghost" onclick="window.location.href='/'">Каталог</button>

@@ -15,7 +15,6 @@ header {
   align-items: center; position: sticky; top: 0; z-index: 100; gap: 1rem; flex-wrap: wrap;
 }
 .logo { font-size: 1.4rem; font-weight: 800; color: var(--purple-light); cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
-.logo::before { content: '✦'; color: var(--purple); }
 nav { display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; }
 button, .btn {
   background: var(--purple); color: white; border: none; padding: 0.6rem 1.2rem;
